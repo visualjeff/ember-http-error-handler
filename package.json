@@ -1,6 +1,6 @@
 {
   "name": "ember-http-error-handler",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "static http response error handler",
   "directories": {
     "doc": "doc",
