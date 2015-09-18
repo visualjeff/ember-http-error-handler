@@ -1,14 +1,13 @@
 # Ember-http-error-handler
 
-A http reponse code error handler.  Interprets everything from a 400 to a 505.  You can then use a local add-on to provide a localized and friendly message. 
+A http reponse code error handler.  Interprets everything from a 400 to a 505.  You can then use a local add-on to provide a localized and friendly message.
 
 ## Installation:
 ```bash
-*  npm install ember-http-error-handler
+   npm install ember-http-error-handler
 ```
    Add the following error route to your project's app/router.js file:
 
-      //NOTE: error could be remove from the path if you don't like to see it.
       this.route('error', { path: '/error/:statusCode/:errorMessageKey' });
 
 ## Usage:
