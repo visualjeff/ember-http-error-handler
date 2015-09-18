@@ -1,25 +1,35 @@
 # Ember-http-error-handler
 
-This README outlines the details of collaborating on this Ember addon.
+A http reponse code error handler.  Interprets everything from a 400 to a 505.  You can then use a local add-on to provide a localized and friendly message. 
 
-## Installation
+## Installation:
+```bash
+*  npm install ember-http-error-handler
+```
+   Add the following error route to your project's app/router.js file:
 
-* `git clone` this repository
-* `npm install`
-* `bower install`
+      //NOTE: error could be remove from the path if you don't like to see it.
+      this.route('error', { path: '/error/:statusCode/:errorMessageKey' });
 
-## Running
-
-* `ember server`
-* Visit your app at http://localhost:4200.
-
-## Running Tests
-
-* `ember test`
-* `ember test --server`
-
-## Building
-
-* `ember build`
-
-For more information on using ember-cli, visit [http://www.ember-cli.com/](http://www.ember-cli.com/).
+## Usage:
+```javascript
+   Ember.$.ajax({
+       url: url,
+       type: 'POST',
+       contentType: 'application/json; charset=utf-8',
+       dataType: 'json',
+       headers: {
+         'Accept': 'application/json'
+       },
+       success: function(data) {
+             Ember.debug("Success callback invoked");
+             self.resolve(data);
+       },
+       error: function(request, textStatus, error) {
+         if (request.status >= 400) {
+           //optionals (after request parameter) allow for overriding the errorRoute and logoutURL.
+           self.httpErrorHandler.errorHandler.call(self, request);
+         }
+       }
+   });
+```
