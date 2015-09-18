@@ -67,7 +67,7 @@ export function initialize(container, application) {
                 .set(504, 'gatewayTimeout')
                 .set(505, 'notSupported');
 
-            let is = function(obj) { Object.prototype.toString.call(obj).slice(8, -1); }
+            let is = (obj) => Object.prototype.toString.call(obj).slice(8, -1);
 
             if (request && typeof request.status !== 'undefined' && errors.has(request.status)) {
                 if (is(errors.get(request.status)) === 'String') {
