@@ -4,14 +4,26 @@ import Ember from 'ember';
  * Ember httpErrorHandler initializer is a dependecy injected service singleton.
  * Created by visualjeff
  *
- * Default 'error' route uses a model override strategy.
- * Template can access the model.properties to query for a locale supported message.  *
+ * Example usage:
  *
- * Call the httpErrorHandler like this:
- *
- *   httpErrorHandler.errorHandler.call(this, error);
- *
- * You can provide your own overriding config/environment.js 'baseURL' and 'errorRoute' properties if you don't like the defaults.
+ *   Ember.$.ajax({
+ *     url: url,
+ *     type: 'POST',
+ *     contentType: 'application/json; charset=utf-8',
+ *     dataType: 'json',
+ *     headers: {
+ *       'Accept': 'application/json'
+ *     },
+ *     success: function(data) {
+ *       Ember.debug("Success callback invoked");
+ *       self.resolve(data);
+ *     },
+ *     error: function(request, textStatus, error) {
+ *       if (request.status >= 400) {
+ *         self.httpErrorHandler.errorHandler.call(self, request);
+ *       }
+ *     }
+ *   });
  */
 export function initialize(container, application) {
     let httpErrorHandler = Ember.Object.extend({
@@ -55,17 +67,11 @@ export function initialize(container, application) {
                 .set(504, 'gatewayTimeout')
                 .set(505, 'notSupported');
 
-            let is = (obj) => Object.prototype.toString.call(obj).slice(8, -1);
+            let is = function(obj) { Object.prototype.toString.call(obj).slice(8, -1); }
 
             if (request && typeof request.status !== 'undefined' && errors.has(request.status)) {
-                Ember.debug("1");
-                Ember.debug(request.status);
-                Ember.debug(errors.get(request.status));
-                Ember.debug(is(errors.get(request.status)));
                 if (is(errors.get(request.status)) === 'String') {
-                    Ember.debug("2");
                     try {
-                        Ember.debug("3");
                         return this.transitionTo(errorRoute, {
                             statusCode: request.status,
                             errorMessageKey: errors.get(request.status)
