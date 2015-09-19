@@ -30,3 +30,6 @@ A http reponse code error handler.  Handles everything from a 400 to a 505 retur
        }
    });
 ```
+
+I tested this addon using the following ember project:
+https://github.com/visualjeff/addon-test
