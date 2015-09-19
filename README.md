@@ -1,6 +1,6 @@
 # Ember-http-error-handler
 
-A http reponse code error handler.  Handles everything from a 400 to a 505 return code.  You could extend it to the error template use a locale add-on to provide a localized and a friendly message.  Just a suggestion.
+A http reponse code error handler.  Handles everything from a 400 to a 505 return code.  You could extend the error template so as to use a locale add-on to provide a localized and a friendlier message.  Just a suggestion.
 
 ## Installation:
 ```bash
