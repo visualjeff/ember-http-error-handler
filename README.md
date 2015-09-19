@@ -1,6 +1,6 @@
 # Ember-http-error-handler
 
-A http reponse code error handler.  Interprets everything from a 400 to a 505.  You can then use a local add-on to provide a localized and friendly message.
+A http reponse code error handler.  Handles everything from a 400 to a 505 return code.  You could extend it to the error template use a locale add-on to provide a localized and a friendly message.  Just a suggestion.
 
 ## Installation:
 ```bash
@@ -12,6 +12,7 @@ A http reponse code error handler.  Interprets everything from a 400 to a 505.  
 
 ## Usage:
 ```javascript
+   var url = 'http://localhost:4200/testService';
    Ember.$.ajax({
        url: url,
        type: 'POST',
@@ -21,14 +22,11 @@ A http reponse code error handler.  Interprets everything from a 400 to a 505.  
          'Accept': 'application/json'
        },
        success: function(data) {
-             Ember.debug("Success callback invoked");
-             self.resolve(data);
+             self.resolve(data); //success callback invoked
        },
        error: function(request, textStatus, error) {
-         if (request.status >= 400) {
-           //optionals (after request parameter) allow for overriding the errorRoute and logoutURL.
+           //Optionals (after the request parameter) allow for overriding the default errorRoute and logoutURL.
            self.httpErrorHandler.errorHandler.call(self, request);
-         }
        }
    });
 ```
