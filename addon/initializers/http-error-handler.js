@@ -19,9 +19,7 @@ import Ember from 'ember';
  *       self.resolve(data);
  *     },
  *     error: function(request, textStatus, error) {
- *       if (request.status >= 400) {
  *         self.httpErrorHandler.errorHandler.call(self, request);
- *       }
  *     }
  *   });
  */
@@ -37,8 +35,13 @@ export function initialize(container, application) {
          * @throws {Error} An error.
          */
         errorHandler: function(request, errorRoute='error', logoutURL='/') {
+            Ember.assert('Must pass in a request object for the first parameter', request);
+            Ember.assert('Must pass in a request object for the first parameter', request.status !== 'undefined');
+            Ember.assert('Must pass in a errorRoute for the second parameter', errorRoute);
+            Ember.assert('Must pass in a logoutURL object for the third parameter', logoutURL);
+
             //Map request status codes / errors for the appropriate error response.
-            let errors = Ember.Map.create()
+            const ERRORS = Object.freeze(Ember.Map.create()
                 .set(400, 'badRequest')
                 .set(401, function() {
                     window.location.href = logoutURL;
@@ -65,42 +68,35 @@ export function initialize(container, application) {
                 .set(502, 'badGateway')
                 .set(503, 'serviceUnavailable')
                 .set(504, 'gatewayTimeout')
-                .set(505, 'notSupported');
+                .set(505, 'notSupported'));
 
-            let is = (obj) => Object.prototype.toString.call(obj).slice(8, -1);
-
-            if (request && typeof request.status !== 'undefined' && errors.has(request.status)) {
-                if (is(errors.get(request.status)) === 'String') {
-                    try {
-                        return this.transitionTo(errorRoute, {
-                            statusCode: request.status,
-                            errorMessageKey: errors.get(request.status)
-                        });
-                    } catch (e) {
-                        Ember.debug(e.message);
-                        return this.transitionTo(errorRoute, {
-                            statusCode: 500,
-                            errorMessageKey: 'systemDown'
-                        });
-                    }
-                } else if (is(errors.get(request.status)) === 'Function') {
-                    Ember.debug("UNAUTHORIZED - You are being routed back to your baseURL for authentication.  In theory...");
-                    return errors.get(request.status)();
-                }
-            } else if (request && typeof request.status !== 'undefined' && request && !errors.has(request.status)) {
-                return this.transitionTo(errorRoute, {
+            let status = request.status || 500;
+            switch(Object.prototype.toString.call((ERRORS.get(status))).slice(8, -1)) {
+              case 'String':
+                try {
+                  return this.transitionTo(errorRoute, {
+                    statusCode: request.status,
+                    errorMessageKey: ERRORS.get(status)
+                  });
+                } catch (e) {
+                  Ember.debug(e.message);
+                  return this.transitionTo(errorRoute, {
                     statusCode: 500,
                     errorMessageKey: 'systemDown'
-                });
-            } else if (request && typeof request.status === 'undefined') {
-                Ember.debug('request object status property is undefined');
+                  });
+                }
+                break;
+              case 'Function':
+                //UNAUTHORIZED - Browser routed back to loginURL.
+                return ERRORS.get(status)();
+              default:
             }
         }
     });
 
     //Register with ember
     application.register('service:httpErrorHandler', httpErrorHandler);
-    //Inject in all routes.  Could be injected into other objects
+    //Inject in all routes
     application.inject('route', 'httpErrorHandler', 'service:httpErrorHandler');
 }
 
