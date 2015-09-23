@@ -36,7 +36,7 @@ export function initialize(container, application) {
          */
         errorHandler: function(request, errorRoute='error', logoutURL='/') {
             Ember.assert('Must pass in a request object for the first parameter', request);
-            Ember.assert('Must pass in a request object for the first parameter', request.status !== 'undefined');
+            Ember.assert('Must pass in a request object for the first parameter', request.status !== undefined);
             Ember.assert('Must pass in a errorRoute for the second parameter', errorRoute);
             Ember.assert('Must pass in a logoutURL object for the third parameter', logoutURL);
 
@@ -70,8 +70,8 @@ export function initialize(container, application) {
                 .set(504, 'gatewayTimeout')
                 .set(505, 'notSupported'));
 
-            let status = request.status || 500;
-            switch(Object.prototype.toString.call((ERRORS.get(status))).slice(8, -1)) {
+            let status = request.status;
+            switch(Object.prototype.toString.call(ERRORS.get(status)).slice(8, -1)) {
               case 'String':
                 try {
                   return this.transitionTo(errorRoute, {
@@ -90,6 +90,10 @@ export function initialize(container, application) {
                 //UNAUTHORIZED - Browser routed back to loginURL.
                 return ERRORS.get(status)();
               default:
+                return this.transitionTo(errorRoute, {
+                  statusCode: 500,
+                  errorMessageKey: 'systemDown'
+                });
             }
         }
     });
